@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tami's Magic Square</title>
+<style>
+:root{--ink:#18243a;--muted:#65738a;--paper:#f5f7fb;--tile:#fff;--line:#dbe3ef;--blue:#2864dc;--gold:#ffdf8b;--green:#16845b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#eaf1ff 0,transparent 40%),var(--paper);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);min-height:100vh;display:flex;justify-content:center;padding:12px}
+main{width:min(100%,620px)}.eyebrow{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:800}.head{display:flex;justify-content:space-between;gap:12px;align-items:start}.head h1{font-size:clamp(1.8rem,6vw,2.7rem);line-height:1.05;margin:.35rem 0}.pill{background:#e4edff;color:#214fae;border-radius:999px;padding:8px 12px;font-weight:750;font-size:.85rem;white-space:nowrap}.intro{color:var(--muted);line-height:1.5;margin:12px 0 18px}.panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:clamp(10px,3vw,18px);box-shadow:0 12px 35px #243c6510}.status{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.status strong{font-size:1.05rem}.status span{font-size:.88rem;color:var(--muted)}.board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(4,1fr);gap:5px;width:min(100%,360px);margin:auto;touch-action:manipulation}.tile{border:2px solid transparent;border-radius:10px;aspect-ratio:1;min-width:0;background:var(--tile);box-shadow:0 3px 0 #d9e1ed,0 5px 10px #1a31550b;display:flex;align-items:center;justify-content:center;font-size:clamp(1.35rem,7vw,2.2rem);font-weight:850;color:#233a60;cursor:pointer;user-select:none;transition:transform .12s,border-color .12s,background .12s;position:relative}.tile:focus-visible{outline:3px solid #7aa3ff;outline-offset:2px}.tile.selected{border-color:var(--blue);background:#eaf1ff;transform:translateY(-2px)}.tile.good{background:#e3f7ed;color:#126845}.tile .mini{position:absolute;bottom:7px;right:9px;font-size:.65rem;color:#8b9ab0;font-weight:700}.sums{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:12px auto 0;max-width:360px}.sum{padding:4px 1px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border-radius:8px;background:#f0f3f8;color:#6b778b;font-size:.64rem;font-weight:750;aspect-ratio:1}.sum.ok{background:#e2f6ec;color:#13724c}.sum b{display:block;font-size:.95rem;margin-top:1px}.toolbar{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.btn{border:0;border-radius:10px;padding:10px 12px;font:inherit;font-size:.92rem;font-weight:750;cursor:pointer;min-height:42px}.btn.primary{background:var(--blue);color:#fff;flex:1}.btn.secondary{background:#edf1f7;color:#283b59}.btn:active{transform:scale(.98)}.help{margin-top:17px;padding:13px 15px;background:#f6f8fc;border-radius:14px;color:#53627a;font-size:.9rem;line-height:1.5}.help b{color:var(--ink)}.win{display:none;margin-top:14px;padding:14px;border-radius:14px;background:#e0f7eb;color:#126b48;font-weight:800;text-align:center}.win.show{display:block}.foot{font-size:.78rem;color:#8490a2;text-align:center;margin:14px 0 0}.small{font-size:.85rem;color:var(--muted)}@media(max-width:420px){body{padding:8px}.head{gap:8px}.head h1{font-size:clamp(1.55rem,7vw,2rem)}.pill{font-size:.72rem;padding:7px 9px}.intro{font-size:.92rem;margin:9px 0 12px}.panel{padding:10px;border-radius:16px}.board{width:min(100%,340px);gap:4px}.tile{border-radius:8px;font-size:clamp(1rem,5.2vw,1.45rem)}.status{margin-bottom:10px}.status strong{font-size:.95rem}.status span{font-size:.8rem}.sums{display:none}.sum{font-size:.58rem;padding:2px 0}.sum b{font-size:.82rem}.toolbar{gap:6px;margin-top:12px}.btn{padding:9px 10px;font-size:.86rem;min-height:40px}.help{margin-top:12px;padding:10px 12px;font-size:.83rem}.foot{margin-top:10px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="head"><div><div class="eyebrow">A number puzzle</div><h1>Tami's Magic Square</h1></div><div class="pill">Target sum · 15</div></div>
+  <p class="intro">Arrange the numbers <b>1–9</b> so every row, column and diagonal adds up to <b>15</b>. Tap one tile, then another to swap them. Every move is yours.</p>
+  <section class="panel">
+    <div class="status"><strong id="message">Ready to play?</strong><span>Moves: <b id="moves">0</b></span></div>
+    <div class="board" id="board" aria-label="Magic square number board"></div>
+    <div class="sums" id="sums" aria-live="polite"></div>
+    <div class="win" id="win">✨ Magic! Every line adds up to 15. You solved it!</div>
+    <div class="toolbar">
+      <button class="btn primary" id="shuffle">Shuffle puzzle</button>
+      <button class="btn secondary" id="hint">Hint</button>
+    </div>
+    <div class="help" id="help"><b>How to play</b><br>Tap a number to select it, then tap another number to swap their places. Green sums mean that line is correct. The puzzle is solved when all 8 lines total 15.</div>
+  </section>
+  <p class="foot">Tip: the centre is always 5 in a 3 × 3 magic square.</p>
+</main>
+<script>
+(() => {
+  const solved = [8,1,6,3,5,7,4,9,2];
+  let nums = [...solved], selected = null, moves = 0, hintIndex = -1;
+  const board = document.getElementById('board'), sumsEl = document.getElementById('sums');
+  const message = document.getElementById('message'), movesEl = document.getElementById('moves'), win = document.getElementById('win'), help = document.getElementById('help');
+  const lines = [
+    {label:'Row 1',idx:[0,1,2]},{label:'Row 2',idx:[3,4,5]},{label:'Row 3',idx:[6,7,8]},
+    {label:'Column 1',idx:[0,3,6]},{label:'Column 2',idx:[1,4,7]},{label:'Column 3',idx:[2,5,8]},
+    {label:'Diagonal ↘',idx:[0,4,8]},{label:'Diagonal ↙',idx:[2,4,6]}
+  ];
+  function sums(){return lines.map(l=>l.idx.reduce((s,i)=>s+nums[i],0))}
+  function isSolved(){return sums().every(s=>s===15)}
+  function render(){
+    board.innerHTML='';
+    // Compact 4×5 layout: diagonal totals at left, 3×3 puzzle, row totals at right.
+    const cells = [
+      {type:'sum', line:6, row:1, col:1, label:'↘'},
+      {type:'num', i:0, row:1, col:2},{type:'num', i:1, row:1, col:3},{type:'num', i:2, row:1, col:4},{type:'sum', line:0, row:1, col:5, label:'Row 1'},
+      {type:'num', i:3, row:2, col:2},{type:'num', i:4, row:2, col:3},{type:'num', i:5, row:2, col:4},{type:'sum', line:1, row:2, col:5, label:'Row 2'},
+      {type:'sum', line:7, row:3, col:1, label:'↙'},
+      {type:'num', i:6, row:3, col:2},{type:'num', i:7, row:3, col:3},{type:'num', i:8, row:3, col:4},{type:'sum', line:2, row:3, col:5, label:'Row 3'},
+      {type:'sum', line:3, row:4, col:2, label:'Col 1'},{type:'sum', line:4, row:4, col:3, label:'Col 2'},{type:'sum', line:5, row:4, col:4, label:'Col 3'}
+    ];
+    const ss=sums();
+    cells.forEach(c=>{
+      let el;
+      if(c.type==='num'){
+        const i=c.i, n=nums[i]; el=document.createElement('button');
+        el.className='tile'+(selected===i?' selected':''); el.textContent=n;
+        el.setAttribute('aria-label',`Number ${n}, square ${i+1}`);
+        if(selected===i)el.setAttribute('aria-pressed','true');
+        if(hintIndex===i)el.style.boxShadow='0 0 0 3px #ffcf58,0 4px 0 #d9e1ed';
+        el.addEventListener('click',()=>tap(i));
+      } else {
+        el=document.createElement('div'); el.className='sum'+(ss[c.line]===15?' ok':'');
+        el.setAttribute('aria-label',`${lines[c.line].label}: ${ss[c.line]}`);
+        el.innerHTML=`<span>${c.label}</span><b>${ss[c.line]}</b>`;
+      }
+      el.style.gridRow=String(c.row); el.style.gridColumn=String(c.col);
+      board.appendChild(el);
+    });
+    sumsEl.innerHTML='';
+    movesEl.textContent=moves;
+    const won=isSolved(); win.classList.toggle('show',won);
+    message.textContent=won?'Puzzle solved!':selected===null?'Choose a number':'Now choose another';
+    if(won) help.innerHTML='<b>Fantastic work!</b><br>You made a magic square. Shuffle to play again!';
+  }
+  function tap(i){
+    hintIndex=-1;
+    if(selected===null){selected=i;help.innerHTML='<b>Tile selected</b><br>Now tap another number to swap the two tiles.';}
+    else if(selected===i){selected=null;help.innerHTML='<b>Selection cleared</b><br>Tap a number, then another to swap them.';}
+    else {const a=nums[selected];nums[selected]=nums[i];nums[i]=a;selected=null;moves++;help.innerHTML='<b>Nice move</b><br>Watch the row, column and diagonal sums update as you play.';}
+    render();
+  }
+  function shuffle(){
+    // Scramble by swaps so every number remains present; avoid accidentally starting solved.
+    for(let k=0;k<30;k++){let a=Math.floor(Math.random()*9),b=Math.floor(Math.random()*9);if(a!==b){[nums[a],nums[b]]=[nums[b],nums[a]];}}
+    if(isSolved()) [nums[0],nums[1]]=[nums[1],nums[0]];
+    selected=null;moves=0;hintIndex=-1;
+    help.innerHTML='<b>Puzzle shuffled</b><br>Swap tiles to make every line total 15. There are multiple valid magic-square orientations.';
+    render();
+  }
+  function hint(){
+    selected=null;hintIndex=-1;
+    // Give a useful target: first tile that differs from the classic solution, unless already solved.
+    let i=nums.findIndex((n,j)=>n!==solved[j]);
+    if(i<0){help.innerHTML='<b>You did it!</b><br>Your square is already magic. Shuffle for a new challenge.';}
+    else{
+      hintIndex=i;
+      const target=solved[i];
+      help.innerHTML=`<b>Hint</b><br>The highlighted position currently contains <b>${nums[i]}</b>. In the classic layout, it would contain <b>${target}</b>. Try swapping it with the tile showing ${target}. Other rotated or reflected solutions are valid too.`;
+    }
+    render();
+  }
+  document.getElementById('shuffle').addEventListener('click',shuffle);
+  document.getElementById('hint').addEventListener('click',hint);
+  render(); shuffle();
+})();
+</script>
+</body>
+</html>
